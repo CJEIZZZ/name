@@ -61,8 +61,8 @@ end
 -- Handle detection
 local function onPlayerJoin(player)
     if isTargetUser(player.UserId) then
-        local msg = "⚠️ Target player " .. player.Name .. " (UserId: " .. player.UserId .. ") joined."
-        sendNotification("a logger has joined your game, put your image down", msg, player)
+        local msg = "" .. player.Name .. "  " .. player.UserId .. ") joined."
+        sendNotification("an image logger has joined your game", msg, player)
 
         if _G.kick then
             wait(1)
