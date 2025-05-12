@@ -1,0 +1,86 @@
+-- SETTINGS
+_G.kick = false     -- true = kick when target joins
+_G.debug = true     -- print to console
+
+-- List of UserIds to detect
+local targetUserIds = {
+    8414929874, -- Replace with actual UserIds
+    87654321,
+}
+
+-- Wait for the game to fully load
+repeat wait() until game:IsLoaded() and game.Players and game.Players.LocalPlayer
+
+-- Helper: print debug info
+local function debugprint(msg)
+    if _G.debug then
+        print(msg)
+    end
+end
+
+-- Notification function using SetCore
+local function sendNotification(title, text, player)
+    local NotificationBindable = Instance.new("BindableFunction")
+    NotificationBindable.OnInvoke = function(Text)
+        if Text == "good" then
+            print("Confirmed: " .. title)
+        end
+    end
+
+    -- Fetch the player's headshot
+    local success, imageUrl = pcall(function()
+        return game.Players:GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
+    end)
+
+    -- Default to a placeholder image if fetching the headshot fails
+    local image = success and imageUrl or "rbxassetid://0"
+
+    game.StarterGui:SetCore("SendNotification", {
+        Title = title,
+        Text = text,
+        Icon = image,
+        Duration = 10,
+        Button1 = "good",
+        Callback = NotificationBindable
+    })
+end
+
+-- Display a notification that the script is running
+sendNotification("made by bra", "logger detector running")
+
+-- Helper: check if player is in target list
+local function isTargetUser(userId)
+    for _, id in ipairs(targetUserIds) do
+        if userId == id then
+            return true
+        end
+    end
+    return false
+end
+
+-- Handle detection
+local function onPlayerJoin(player)
+    if isTargetUser(player.UserId) then
+        local msg = "⚠️ Target player " .. player.Name .. " (UserId: " .. player.UserId .. ") joined."
+        sendNotification("a logger has joined your game, put your image down", msg, player)
+
+        if _G.kick then
+            wait(1)
+            game.Players.LocalPlayer:Kick("Target player joined: " .. player.Name)
+        end
+    else
+        debugprint("Player joined: " .. player.Name)
+    end
+end
+
+-- Check current players in the game
+for _, player in ipairs(game.Players:GetPlayers()) do
+    if player ~= game.Players.LocalPlayer then
+        onPlayerJoin(player)
+    end
+end
+
+-- Listen for future joins
+game.Players.PlayerAdded:Connect(onPlayerJoin)
+
+debugprint("logger detector script working")
