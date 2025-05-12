@@ -62,7 +62,7 @@ end
 local function onPlayerJoin(player)
     if isTargetUser(player.UserId) then
         local msg = "" .. player.Name .. "  " .. player.UserId .. ") joined."
-        sendNotification("an image logger has joined your game", msg, player)
+        sendNotification("a image logger has joined your game", msg, player)
 
         if _G.kick then
             wait(1)
